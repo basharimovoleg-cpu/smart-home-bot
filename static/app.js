@@ -297,7 +297,7 @@ async function completeTask(taskId) {
     showToast('Выполняю...');
     try {
         await API.completeTask(taskId);
-        const item = document.getElementById(`task-${taskId}`);
+        const item = document.querySelector(`.task-item[data-id="${taskId}"]`);
         if (item) { item.style.opacity = '0.5'; setTimeout(() => { item.remove(); checkEmptyTasks(); }, 300); }
         showToast('✅ Выполнено');
     } catch (e) { showToast('❌ ' + e.message); }
@@ -307,7 +307,7 @@ async function deleteTaskById(taskId) {
     showToast('Удаляю...');
     try {
         await API.deleteTask(taskId);
-        const item = document.getElementById(`task-${taskId}`);
+        const item = document.querySelector(`.task-item[data-id="${taskId}"]`);
         if (item) { item.style.opacity = '0.5'; setTimeout(() => { item.remove(); checkEmptyTasks(); }, 300); }
         showToast('🗑 Удалено');
     } catch (e) { showToast('❌ ' + e.message); }
@@ -316,7 +316,7 @@ async function deleteTaskById(taskId) {
 let editingTaskId = null;
 
 async function editTask(taskId) {
-    const item = document.getElementById(`task-${taskId}`);
+    const item = document.querySelector(`.task-item[data-id="${taskId}"]`);
     if (!item) return;
     const titleEl = item.querySelector('.task-title');
     const dateEl = item.querySelector('.task-date');
