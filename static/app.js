@@ -294,19 +294,23 @@ async function loadTasks() {
 }
 
 async function completeTask(taskId) {
+    showToast('Выполняю...');
     try {
         await API.completeTask(taskId);
         const item = document.getElementById(`task-${taskId}`);
         if (item) { item.style.opacity = '0.5'; setTimeout(() => { item.remove(); checkEmptyTasks(); }, 300); }
-    } catch (e) { showToast(e.message); }
+        showToast('✅ Выполнено');
+    } catch (e) { showToast('❌ ' + e.message); }
 }
 
 async function deleteTaskById(taskId) {
+    showToast('Удаляю...');
     try {
         await API.deleteTask(taskId);
         const item = document.getElementById(`task-${taskId}`);
         if (item) { item.style.opacity = '0.5'; setTimeout(() => { item.remove(); checkEmptyTasks(); }, 300); }
-    } catch (e) { showToast(e.message); }
+        showToast('🗑 Удалено');
+    } catch (e) { showToast('❌ ' + e.message); }
 }
 
 let editingTaskId = null;
