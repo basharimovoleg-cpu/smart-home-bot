@@ -65,9 +65,18 @@ async def _setup_menu_button(bot) -> None:
 async def lifespan(app: FastAPI):
     """Жизненный цикл: БД, бот, планировщик, webhook."""
     # ── Инициализация БД ──
-    from database import init_db
+    from database import init_db, get_all_settings
     await init_db()
     logger.info("Database initialized")
+
+    # ── Загрузка настроек из БД в окружение (приоритет: env var > DB) ──
+    db_settings = await get_all_settings()
+    for key, value in db_settings.items():
+        env_key = key.upper()
+        if not os.getenv(env_key):
+            os.environ[env_key] = value
+    if db_settings:
+        logger.info(f"Loaded {len(db_settings)} settings from DB")
 
     # ── Создание директорий для статики ──
     img_dir = Path("static/images/recipes")
@@ -205,7 +214,11 @@ async def health():
         },
         "services": {
             "tuya": bool(settings.tuya_access_id and settings.tuya_secret),
-            "rutracker": bool(settings.rutracker_user and settings.rutracker_pass),
+            "rutracker": bool(
+                settings.rutracker_user or os.getenv("RUTRACKER_USER")
+            ) and bool(
+                settings.rutracker_pass or os.getenv("RUTRACKER_PASS")
+            ),
             "qbittorrent": bool(settings.pc_ip),
         },
     }

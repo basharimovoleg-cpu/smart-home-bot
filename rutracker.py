@@ -107,10 +107,18 @@ class RutrackerClient:
         self._ensure_session()
         try:
             from config import settings
+
             user = settings.rutracker_user
             password = settings.rutracker_pass
+
+            # Fallback: check os.environ (may have been loaded from DB at startup)
+            if not user:
+                user = __import__("os").environ.get("RUTRACKER_USER", "")
+            if not password:
+                password = __import__("os").environ.get("RUTRACKER_PASS", "")
+
             if not user or not password:
-                logger.error("RUTRACKER_USER or RUTRACKER_PASS not set in .env")
+                logger.warning("Rutracker credentials not set. Use Mini App → Настройки to configure.")
                 return False
             resp = self._session.post(
                 RUTRACKER_LOGIN,

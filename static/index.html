@@ -104,6 +104,28 @@
         </div>
     </div>
 
+    <!-- ═══ Вкладка: Настройки ═══ -->
+    <div class="tab-page" id="tab-settings">
+        <div class="container">
+            <div class="block">
+                <h2>⚙️ Настройки</h2>
+                <p style="color:#888;font-size:13px;margin-bottom:16px;">
+                    Здесь можно настроить доступы к сервисам, не заходя в Render.
+                </p>
+
+                <div class="settings-section">
+                    <h3>🎬 Rutracker (поиск фильмов)</h3>
+                    <label class="input-label">Логин</label>
+                    <input type="text" id="setting-rutracker-user" class="input" placeholder="rutracker_user">
+                    <label class="input-label">Пароль</label>
+                    <input type="password" id="setting-rutracker-pass" class="input" placeholder="rutracker_pass">
+                    <button class="btn btn-primary" id="save-settings-btn" style="margin-top:12px;">💾 Сохранить</button>
+                    <div id="settings-status" style="margin-top:8px;font-size:13px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ═══ Bottom Navigation ═══ -->
     <nav class="bottom-nav">
         <button class="nav-btn active" data-tab="home">
@@ -117,6 +139,9 @@
         </button>
         <button class="nav-btn" data-tab="movies">
             <span class="nav-icon">🎬</span><span class="nav-label">Кино</span>
+        </button>
+        <button class="nav-btn" data-tab="settings">
+            <span class="nav-icon">⚙️</span><span class="nav-label">Настройки</span>
         </button>
     </nav>
 

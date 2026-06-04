@@ -85,6 +85,12 @@ async def init_db() -> None:
                 completed_at TIMESTAMP
             )
         """)
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS settings (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL DEFAULT ''
+            )
+        """)
         await db.commit()
 
         # Заполняем начальными данными alice_care
@@ -618,5 +624,42 @@ async def delete_movie_download(download_id: int) -> bool:
         cursor = await db.execute("DELETE FROM movie_downloads WHERE id = ?", (download_id,))
         await db.commit()
         return cursor.rowcount > 0
+    finally:
+        await db.close()
+
+
+# ── Настройки (Settings) ──────────────────────────────────────────
+
+async def get_setting(key: str) -> str:
+    """Получить значение настройки из БД."""
+    db = await get_db()
+    try:
+        cursor = await db.execute("SELECT value FROM settings WHERE key = ?", (key,))
+        row = await cursor.fetchone()
+        return row["value"] if row else ""
+    finally:
+        await db.close()
+
+
+async def set_setting(key: str, value: str) -> None:
+    """Сохранить настройку в БД."""
+    db = await get_db()
+    try:
+        await db.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)",
+            (key, value),
+        )
+        await db.commit()
+    finally:
+        await db.close()
+
+
+async def get_all_settings() -> dict[str, str]:
+    """Получить все настройки."""
+    db = await get_db()
+    try:
+        cursor = await db.execute("SELECT key, value FROM settings")
+        rows = await cursor.fetchall()
+        return {row["key"]: row["value"] for row in rows}
     finally:
         await db.close()

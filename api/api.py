@@ -36,8 +36,10 @@ from database import (
     get_recipe,
     get_recipe_categories,
     get_recipes,
+    get_setting,
     get_task_history,
     return_task_from_history,
+    set_setting,
     update_download_state,
     update_recipe,
     update_task,
@@ -142,6 +144,53 @@ async def get_current_user(
 
 class LightToggleRequest(BaseModel):
     mode: str  # "all", "main", "rims"
+
+
+# ── Настройки (Settings) ──────────────────────────────────────────
+
+class SettingUpdate(BaseModel):
+    key: str
+    value: str
+
+
+@router.get("/settings")
+async def list_settings(
+    request: Request,
+    auth: dict[str, Any] = Depends(get_current_user),
+) -> dict[str, str]:
+    """Получить все настройки (без чувствительных значений)."""
+    from database import get_all_settings
+    all_settings = await get_all_settings()
+
+    # Маскируем пароли
+    masked = {}
+    for k, v in all_settings.items():
+        if "pass" in k.lower() or "secret" in k.lower() or "token" in k.lower():
+            masked[k] = "***" + v[-4:] if len(v) > 4 else "***"
+        else:
+            masked[k] = v
+    return masked
+
+
+@router.post("/settings")
+async def save_setting(
+    body: SettingUpdate,
+    request: Request,
+    auth: dict[str, Any] = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Сохранить настройку в БД и обновить os.environ."""
+    import os
+
+    key = body.key.strip()
+    value = body.value.strip()
+
+    if not key:
+        raise HTTPException(status_code=400, detail="Key is required")
+
+    await set_setting(key, value)
+    os.environ[key.upper()] = value
+
+    return {"success": True, "key": key, "saved": True}
 
 
 # ── Webhook Telegram ──────────────────────────────────────────────
@@ -351,11 +400,17 @@ async def search_movies(
 ) -> dict[str, Any]:
     """Поиск фильмов на rutracker."""
     from rutracker import rutracker as rt
+    import os
 
-    if not settings.rutracker_user or not settings.rutracker_pass:
+    has_creds = (
+        settings.rutracker_user or os.getenv("RUTRACKER_USER", "")
+    ) and (
+        settings.rutracker_pass or os.getenv("RUTRACKER_PASS", "")
+    )
+    if not has_creds:
         raise HTTPException(
             status_code=503,
-            detail="Поиск фильмов не настроен: укажи RUTRACKER_USER и RUTRACKER_PASS в настройках Render",
+            detail="Поиск не настроен. Открой Mini App → ⚙️ Настройки и введи rutracker_user и rutracker_pass.",
         )
 
     min_q, max_q = QUALITY_RANGE.get(quality, (40, 99))

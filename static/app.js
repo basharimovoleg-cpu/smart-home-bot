@@ -846,6 +846,54 @@ function formatDate(dateStr) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// Настройки
+// ═══════════════════════════════════════════════════════════
+
+async function loadSettings() {
+    try {
+        const data = await API.request('/api/settings');
+        if (data.rutracker_user) document.getElementById('setting-rutracker-user').value = data.rutracker_user;
+        if (data.rutracker_pass) document.getElementById('setting-rutracker-pass').value = data.rutracker_pass;
+    } catch (e) {
+        // silently ignore
+    }
+}
+
+async function saveSettings() {
+    const statusEl = document.getElementById('settings-status');
+    const btn = document.getElementById('save-settings-btn');
+    const user = document.getElementById('setting-rutracker-user').value.trim();
+    const pass = document.getElementById('setting-rutracker-pass').value.trim();
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Сохраняю...';
+    statusEl.textContent = '';
+    statusEl.style.color = '#888';
+
+    try {
+        if (user) await API.request('/api/settings', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({key: 'rutracker_user', value: user}),
+        });
+        if (pass) await API.request('/api/settings', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({key: 'rutracker_pass', value: pass}),
+        });
+
+        statusEl.textContent = '✅ Настройки сохранены! Поиск фильмов должен заработать.';
+        statusEl.style.color = '#4caf50';
+    } catch (e) {
+        statusEl.textContent = '❌ Ошибка: ' + (e.message || 'не удалось сохранить');
+        statusEl.style.color = '#f44336';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '💾 Сохранить';
+    }
+}
+
+// ═══════════════════════════════════════════════════════════
 // Инициализация
 // ═══════════════════════════════════════════════════════════
 
@@ -871,4 +919,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Esc закрывает модалки
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllModals(); });
+
+    // Настройки
+    loadSettings();
+    document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
 });
