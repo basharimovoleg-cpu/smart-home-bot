@@ -298,7 +298,7 @@ async function completeTask(taskId) {
         await API.completeTask(taskId);
         const item = document.getElementById(`task-${taskId}`);
         if (item) { item.style.opacity = '0.5'; setTimeout(() => { item.remove(); checkEmptyTasks(); }, 300); }
-    } catch (e) { showToast('Ошибка'); }
+    } catch (e) { showToast(e.message); }
 }
 
 async function deleteTaskById(taskId) {
@@ -306,7 +306,7 @@ async function deleteTaskById(taskId) {
         await API.deleteTask(taskId);
         const item = document.getElementById(`task-${taskId}`);
         if (item) { item.style.opacity = '0.5'; setTimeout(() => { item.remove(); checkEmptyTasks(); }, 300); }
-    } catch (e) { showToast('Ошибка'); }
+    } catch (e) { showToast(e.message); }
 }
 
 let editingTaskId = null;
