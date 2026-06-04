@@ -1,13 +1,11 @@
 """
-Тесты API: валидация initData, CRUD задач, погода, свет.
+Тесты API: валидация initData, CRUD задач, свет.
 """
 import os
 
 # ── Переопределяем переменные окружения ДО любых импортов ──
 # .env может содержать реальные ключи; для тестов нужны предсказуемые значения.
 os.environ["BOT_TOKEN"] = "test_bot_token"
-os.environ["WEATHER_API_KEY"] = "dummy_api_key"
-os.environ["WEATHER_CITY"] = "TestCity"
 os.environ["TUYA_ACCESS_ID"] = ""
 os.environ["TUYA_DEVICE_ID"] = ""
 

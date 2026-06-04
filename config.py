@@ -12,8 +12,6 @@ load_dotenv()
 @dataclass
 class Settings:
     bot_token: str = field(default_factory=lambda: os.getenv("BOT_TOKEN", "").strip())
-    weather_api_key: str = field(default_factory=lambda: os.getenv("WEATHER_API_KEY", "").strip())
-    weather_city: str = field(default_factory=lambda: os.getenv("WEATHER_CITY", "Mogilev").strip())
     tuya_access_id: str = field(default_factory=lambda: os.getenv("TUYA_ACCESS_ID", "").strip())
     tuya_secret: str = field(default_factory=lambda: os.getenv("TUYA_SECRET", "").strip())
     tuya_device_id: str = field(default_factory=lambda: os.getenv("TUYA_DEVICE_ID", "").strip())

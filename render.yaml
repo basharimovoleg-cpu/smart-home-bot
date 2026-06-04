@@ -23,10 +23,6 @@ services:
         sync: false
       - key: SISYPHUS_API_KEY
         sync: false
-      - key: WEATHER_API_KEY
-        sync: false
-      - key: WEATHER_CITY
-        value: "Mogilev"
       - key: PC_IP
         sync: false
       - key: PC_MAC
