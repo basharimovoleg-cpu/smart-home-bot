@@ -352,6 +352,12 @@ async def search_movies(
     """Поиск фильмов на rutracker."""
     from rutracker import rutracker as rt
 
+    if not settings.rutracker_user or not settings.rutracker_pass:
+        raise HTTPException(
+            status_code=503,
+            detail="Поиск фильмов не настроен: укажи RUTRACKER_USER и RUTRACKER_PASS в настройках Render",
+        )
+
     min_q, max_q = QUALITY_RANGE.get(quality, (40, 99))
     results = await asyncio.to_thread(rt.search, q, min_q, max_q)
 

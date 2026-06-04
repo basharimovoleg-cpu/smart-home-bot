@@ -188,7 +188,27 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    import platform
+    from database import DB_PATH
+
+    db_exists = DB_PATH.exists()
+    db_size = DB_PATH.stat().st_size if db_exists else 0
+
+    return {
+        "status": "ok",
+        "mode": "webhook" if settings.webhook_mode else "polling",
+        "python": platform.python_version(),
+        "db": {
+            "exists": db_exists,
+            "size_bytes": db_size,
+            "path": str(DB_PATH),
+        },
+        "services": {
+            "tuya": bool(settings.tuya_access_id and settings.tuya_secret),
+            "rutracker": bool(settings.rutracker_user and settings.rutracker_pass),
+            "qbittorrent": bool(settings.pc_ip),
+        },
+    }
 
 
 def _ssh_known_hosts() -> str | None:
