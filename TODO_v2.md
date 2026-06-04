@@ -1,0 +1,20 @@
+# TODO
+- [x] Step 1: Remove weather from api.py, bot.py, static files, and CSS
+- [x] Step 2: Update database.py — new history table, public tasks, complete→history
+- [x] Step 3: Update api.py — new endpoints, remove weather, public tasks + history
+- [x] Step 4: Update frontend — 3 light buttons, history block, remove weather
+- [x] Step 5: Verify with curl and restart server
+- [x] Step 1: requirements.txt + install python-multipart
+- [x] Step 2: database.py — recipe_categories + recipes tables, CRUD
+- [x] Step 3: main.py — create static/images/recipes/ dir in lifespan
+- [x] Step 4: api.py — 4 recipe endpoints (categories GET/POST, recipes GET/POST)
+- [x] Step 5: static/index.html — SPA redesign with bottom nav, 3 tabs
+- [x] Step 6: static/app.js — SPA logic, recipes, categories, forms
+- [x] Step 7: static/style.css — bottom nav, recipe grid, chips, modals
+- [x] Step 8: install deps, restart, curl-verify all endpoints
+- [x] [BUG] Fix recipe card click via event delegation (data-recipe-id)
+- [x] [BACKEND] database.py — get_recipe, update_recipe, delete_recipe
+- [x] [BACKEND] api.py — PUT /api/recipes/{id}, DELETE /api/recipes/{id}
+- [x] [FRONTEND] app.js — event delegation, edit modal, delete with confirm
+- [x] [FRONTEND] index.html — edit recipe modal, detail modal edit button
+- [x] Verify — code compiles, DB schema correct, 25 recipes present

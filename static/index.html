@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="/static/style.css?v=21">
+    <title>Домашний Помощник</title>
+</head>
+<body>
+
+    <!-- ═══ Вкладка: Главная ═══ -->
+    <div class="tab-page active" id="tab-home">
+        <div class="container">
+            <div class="block" id="light-block">
+                <h2>💡 Управление светом</h2>
+                <div class="light-status" id="light-status">Загрузка...</div>
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm" id="light-toggle-all">🔄 Всё</button>
+                    <button class="btn btn-primary btn-sm" id="light-toggle-main">💡 Основной</button>
+                    <button class="btn btn-primary btn-sm" id="light-toggle-rims">✨ Ободки</button>
+                </div>
+            </div>
+
+            <div class="block" id="pc-block">
+                <h2>🖥 Управление ПК</h2>
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm" id="pc-sleep-btn">😴 Усыпить</button>
+                    <button class="btn btn-primary btn-sm" id="pc-wake-btn">⚡ Разбудить</button>
+                </div>
+                <div class="pc-status" id="pc-status" style="margin-top:8px;font-size:13px;color:#888;"></div>
+            </div>
+
+            <div class="block" id="tasks-block">
+                <h2>🐾 Задачи</h2>
+                <button class="btn btn-primary" id="add-task-btn">+ Добавить задачу</button>
+                <div class="tasks-list" id="tasks-list">
+                    <div class="loading">Загрузка...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ Вкладка: Рецепты ═══ -->
+    <div class="tab-page" id="tab-recipes">
+        <div class="container">
+            <div class="block">
+                <h2>📖 Книга рецептов</h2>
+                <div class="btn-group" style="margin-bottom:10px;">
+                    <button class="btn btn-secondary btn-sm" id="add-category-btn">+ Категория</button>
+                    <button class="btn btn-primary btn-sm" id="add-recipe-btn">+ Рецепт</button>
+                    <button class="btn btn-danger btn-sm hidden" id="delete-category-btn">🗑️ Удалить</button>
+                </div>
+                <div class="chips-scroll" id="chips-container">
+                    <button class="chip active" data-category-id="">Все</button>
+                </div>
+                <div class="recipe-grid" id="recipe-grid">
+                    <div class="loading">Загрузка...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ Вкладка: История ═══ -->
+    <div class="tab-page" id="tab-history">
+        <div class="container">
+            <div class="block">
+                <h2>📋 История задач</h2>
+                <button class="btn btn-secondary" id="load-history-btn">Загрузить историю</button>
+                <div class="history-list" id="history-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ Вкладка: Кино ═══ -->
+    <div class="tab-page" id="tab-movies">
+        <div class="container">
+            <div class="block">
+                <h2>🎬 Поиск фильмов</h2>
+                <div style="margin-bottom:12px;">
+                    <textarea id="movie-search-input" class="input search-area" placeholder="Название фильма..." rows="2"></textarea>
+                    <div style="display:flex;gap:8px;margin-top:8px;">
+                        <select id="movie-quality-select" class="input" style="flex:1;">
+                            <option value="4K" selected>4K</option>
+                            <option value="1080p">1080p</option>
+                            <option value="720p">720p</option>
+                        </select>
+                        <button class="btn btn-primary" id="movie-search-btn" style="flex:1;">🔍 Искать</button>
+                    </div>
+                </div>
+                <div id="movie-search-status" style="font-size:13px;color:#888;margin-bottom:8px;"></div>
+                <div class="movie-results" id="movie-results"></div>
+            </div>
+            <div class="block">
+                <h2>📥 Загрузки</h2>
+                <button class="btn btn-secondary btn-sm" id="refresh-downloads-btn" style="margin-bottom:8px;">🔄 Обновить</button>
+                <div class="movie-downloads" id="movie-downloads">
+                    <div class="empty-state">Нет активных загрузок</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ Bottom Navigation ═══ -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" data-tab="home">
+            <span class="nav-icon">🏠</span><span class="nav-label">Главная</span>
+        </button>
+        <button class="nav-btn" data-tab="recipes">
+            <span class="nav-icon">📖</span><span class="nav-label">Рецепты</span>
+        </button>
+        <button class="nav-btn" data-tab="history">
+            <span class="nav-icon">📋</span><span class="nav-label">История</span>
+        </button>
+        <button class="nav-btn" data-tab="movies">
+            <span class="nav-icon">🎬</span><span class="nav-label">Кино</span>
+        </button>
+    </nav>
+
+    <!-- ═══ Модальные окна ═══ -->
+    <div class="modal hidden" id="task-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <h3>📋 Новая задача</h3>
+            <input type="text" id="task-title" class="input" placeholder="Название задачи" maxlength="200">
+            <input type="date" id="task-date" class="input">
+            <div class="modal-buttons">
+                <button class="btn btn-primary" id="save-task">Сохранить</button>
+                <button class="btn btn-secondary close-modal-btn">Отмена</button>
+            </div>
+            <div class="error-msg hidden" id="modal-error"></div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="task-edit-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <h3>✏️ Редактировать задачу</h3>
+            <input type="text" id="edit-task-title" class="input" placeholder="Название задачи" maxlength="200">
+            <input type="date" id="edit-task-date" class="input">
+            <div class="modal-buttons">
+                <button class="btn btn-primary" id="save-edit-task">💾 Сохранить</button>
+                <button class="btn btn-secondary close-modal-btn">Отмена</button>
+            </div>
+            <div class="error-msg hidden" id="edit-task-error"></div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="category-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <h3>📁 Новая категория</h3>
+            <input type="text" id="category-name" class="input" placeholder="Название категории" maxlength="100">
+            <div class="modal-buttons">
+                <button class="btn btn-primary" id="save-category">Сохранить</button>
+                <button class="btn btn-secondary close-modal-btn">Отмена</button>
+            </div>
+            <div class="error-msg hidden" id="cat-error"></div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="recipe-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content" style="max-width:420px;">
+            <h3>🍽 Новый рецепт</h3>
+            <input type="text" id="recipe-title" class="input" placeholder="Название блюда" maxlength="200">
+            <select id="recipe-category" class="input"></select>
+            <textarea id="recipe-ingredients" class="input textarea" placeholder="Ингредиенты" rows="3"></textarea>
+            <textarea id="recipe-steps" class="input textarea" placeholder="Шаги приготовления" rows="4"></textarea>
+            <input type="file" id="recipe-image" class="input" accept="image/*">
+            <div class="modal-buttons">
+                <button class="btn btn-primary" id="save-recipe">Сохранить</button>
+                <button class="btn btn-secondary close-modal-btn">Отмена</button>
+            </div>
+            <div class="error-msg hidden" id="recipe-error"></div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="recipe-detail-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content" style="max-width:440px;">
+            <h3 id="detail-title"></h3>
+            <img id="detail-image" src="" alt="" style="width:100%;border-radius:8px;display:none;">
+            <div><strong>📋 Ингредиенты:</strong></div>
+            <div id="detail-ingredients" style="white-space:pre-wrap;font-size:14px;margin:4px 0;"></div>
+            <div><strong>📝 Приготовление:</strong></div>
+            <div id="detail-steps" style="white-space:pre-wrap;font-size:14px;margin:4px 0;"></div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary close-modal-btn">Закрыть</button>
+                <button class="btn btn-primary" id="edit-recipe-btn">✏️ Редактировать</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="recipe-edit-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content" style="max-width:420px;">
+            <h3>✏️ Редактировать рецепт</h3>
+            <input type="text" id="edit-recipe-title" class="input" placeholder="Название блюда" maxlength="200">
+            <select id="edit-recipe-category" class="input"></select>
+            <textarea id="edit-recipe-ingredients" class="input textarea" placeholder="Ингредиенты" rows="3"></textarea>
+            <textarea id="edit-recipe-steps" class="input textarea" placeholder="Шаги приготовления" rows="4"></textarea>
+            <input type="file" id="edit-recipe-image" class="input" accept="image/*">
+            <div class="modal-buttons">
+                <button class="btn btn-primary" id="save-edit-recipe">💾 Сохранить</button>
+                <button class="btn btn-danger" id="delete-recipe-btn">🗑 Удалить</button>
+            </div>
+            <button class="btn btn-secondary close-modal-btn">Отмена</button>
+            <div class="error-msg hidden" id="edit-recipe-error"></div>
+        </div>
+    </div>
+
+    <div class="toast hidden" id="toast"></div>
+
+    <script src="/static/app.js?v=27"></script>
+</body>
+</html>

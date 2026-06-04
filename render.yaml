@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: smart-home-bot
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    plan: free
+    envVars:
+      - key: WEBHOOK_MODE
+        value: "true"
+      - key: BOT_TOKEN
+        sync: false
+      - key: TUYA_ACCESS_ID
+        sync: false
+      - key: TUYA_SECRET
+        sync: false
+      - key: TUYA_DEVICE_ID
+        sync: false
+      - key: TUYA_REGION_URL
+        value: "https://openapi.tuyaeu.com"
+      - key: ALLOWED_USERS
+        sync: false
+      - key: SISYPHUS_API_KEY
+        sync: false
+      - key: WEATHER_API_KEY
+        sync: false
+      - key: WEATHER_CITY
+        value: "Mogilev"
+      - key: PC_IP
+        sync: false
+      - key: PC_MAC
+        sync: false
+      - key: PC_USER
+        sync: false
+      - key: SSH_KEY_PATH
+        value: "/root/.ssh/id_rsa"
+      - key: QB_USER
+        sync: false
+      - key: QB_PASS
+        sync: false
+      - key: RUTRACKER_USER
+        sync: false
+      - key: RUTRACKER_PASS
+        sync: false

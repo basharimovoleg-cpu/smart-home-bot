@@ -1,0 +1,577 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--tg-theme-bg-color, #ffffff);
+    color: var(--tg-theme-text-color, #000000);
+    padding: 16px 16px 80px 16px;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.block {
+    background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.block h2 {
+    font-size: 18px;
+    margin-bottom: 14px;
+    font-weight: 600;
+}
+
+/* ── Кнопки ─────────────────────────────────────────── */
+
+.btn {
+    display: inline-block;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    width: 100%;
+    text-align: center;
+}
+
+.btn:active { opacity: 0.7; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-primary {
+    background-color: var(--tg-theme-button-color, #3390ec);
+    color: var(--tg-theme-button-text-color, #ffffff);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--tg-theme-hint-color, #999999);
+    border: 1px solid var(--tg-theme-hint-color, #999999);
+}
+
+/* ── Группа кнопок ──────────────────────────────────── */
+
+.btn-group {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-group .btn-sm {
+    flex: 1;
+    padding: 10px 8px;
+    font-size: 13px;
+}
+
+/* ── Свет ───────────────────────────────────────────── */
+
+.light-status {
+    font-size: 14px;
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+.light-status .on { color: #4caf50; font-weight: 600; }
+.light-status .off { color: #f44336; font-weight: 600; }
+
+/* ── Задачи ─────────────────────────────────────────── */
+
+.tasks-list {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background-color: var(--tg-theme-bg-color, #fff);
+    border-radius: 8px;
+    gap: 10px;
+}
+
+.task-info { flex: 1; min-width: 0; }
+
+.task-title { font-size: 15px; font-weight: 500; word-break: break-word; }
+
+.task-date {
+    font-size: 12px;
+    color: var(--tg-theme-hint-color, #888);
+    margin-top: 2px;
+}
+
+.task-edit-btn, .task-done-btn, .task-delete-btn {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--tg-theme-hint-color, #ccc);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    color: var(--tg-theme-hint-color, #ccc);
+    font-size: 18px;
+}
+
+.task-edit-btn:active { background-color: #ff9800; border-color: #ff9800; color: #fff; }
+.task-done-btn:active { background-color: #4caf50; border-color: #4caf50; color: #fff; }
+.task-delete-btn:active { background-color: #f44336; border-color: #f44336; color: #fff; }
+
+.task-return-btn {
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--tg-theme-hint-color, #ccc);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    color: var(--tg-theme-hint-color, #ccc);
+    font-size: 16px;
+    margin-left: 6px;
+}
+.task-return-btn:active { background-color: #2196f3; border-color: #2196f3; color: #fff; }
+
+.empty-state {
+    text-align: center;
+    color: var(--tg-theme-hint-color, #888);
+    padding: 20px 0;
+    font-size: 14px;
+}
+
+.loading {
+    text-align: center;
+    color: var(--tg-theme-hint-color, #888);
+    padding: 10px 0;
+    font-size: 14px;
+}
+
+/* ── SPA: Вкладки ───────────────────────────────────── */
+
+.tab-page { display: none; }
+.tab-page.active { display: block; }
+
+/* ── Bottom Navigation ───────────────────────────────── */
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    display: flex;
+    background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+    border-top: 1px solid var(--tg-theme-hint-color, #ddd);
+    padding: 6px 0;
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+    z-index: 50;
+}
+
+.nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--tg-theme-hint-color, #999);
+    padding: 6px 4px;
+    font-size: 12px;
+    transition: color 0.15s;
+}
+
+.nav-btn.active {
+    color: var(--tg-theme-button-color, #3390ec);
+}
+
+.nav-icon { font-size: 22px; }
+.nav-label { font-size: 11px; font-weight: 500; }
+
+/* ── Рецепты: Чипсы ──────────────────────────────────── */
+
+.chips-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.chips-scroll::-webkit-scrollbar { display: none; }
+
+.chip {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--tg-theme-hint-color, #ccc);
+    background: var(--tg-theme-bg-color, #fff);
+    color: var(--tg-theme-text-color, #000);
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: all 0.15s;
+}
+
+.chip.active {
+    background: var(--tg-theme-button-color, #3390ec);
+    color: var(--tg-theme-button-text-color, #fff);
+    border-color: var(--tg-theme-button-color, #3390ec);
+}
+
+/* ── Рецепты: Сетка ──────────────────────────────────── */
+
+.recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.recipe-card {
+    background: var(--tg-theme-bg-color, #fff);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s;
+}
+
+.recipe-card:active { transform: scale(0.97); }
+
+.recipe-img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    display: block;
+}
+
+.recipe-img-placeholder {
+    width: 100%;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    background: var(--tg-theme-secondary-bg-color, #eee);
+}
+
+.recipe-card-title {
+    padding: 8px 10px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+/* ── История (аккордеон) ─────────────────────────── */
+
+.history-list {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-group {
+    background-color: var(--tg-theme-bg-color, #fff);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.history-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--tg-theme-button-color, #3390ec);
+    padding: 10px 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+}
+.history-date:hover {
+    background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+}
+
+.history-arrow {
+    display: inline-block;
+    font-size: 10px;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+}
+.history-group.open .history-arrow {
+    transform: rotate(90deg);
+}
+
+.history-count {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--tg-theme-hint-color, #888);
+    margin-left: auto;
+}
+
+.history-items {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+.history-items.open {
+    max-height: 600px;   /* достаточно для любой группы */
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-top: 1px solid var(--tg-theme-secondary-bg-color, #f0f0f0);
+}
+
+.history-title { flex: 1; min-width: 0; word-break: break-word; }
+
+.history-by {
+    flex-shrink: 0;
+    font-size: 12px;
+    color: var(--tg-theme-hint-color, #888);
+    margin-left: 8px;
+    white-space: nowrap;
+}
+
+/* ── Модальное окно ─────────────────────────────────── */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.hidden { display: none; }
+
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    position: relative;
+    background: var(--tg-theme-bg-color, #fff);
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-content h3 {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--tg-theme-hint-color, #ccc);
+    font-size: 15px;
+    background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+    color: var(--tg-theme-text-color, #000);
+    outline: none;
+}
+
+.input:focus { border-color: var(--tg-theme-button-color, #3390ec); }
+
+.textarea {
+    resize: none;
+    font-family: inherit;
+    line-height: 1.5;
+    min-height: 80px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+select.input { appearance: auto; }
+
+.modal-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.modal-buttons .btn { flex: 1; }
+
+.error-msg {
+    color: #f44336;
+    font-size: 13px;
+    text-align: center;
+}
+
+.error-msg.hidden { display: none; }
+
+input[type="file"].input {
+    padding: 8px;
+    font-size: 13px;
+}
+
+/* ── Toast ──────────────────────────────────────────── */
+
+.toast {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f44336;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 200;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    text-align: center;
+    max-width: 90%;
+}
+
+.toast.success {
+    background: #4CAF50;
+}
+
+.toast.hidden { display: none; }
+
+/* ── Кино ───────────────────────────────────────────── */
+
+.movie-results { display: flex; flex-direction: column; gap: 6px; }
+
+.movie-item {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    background: #2a2a2a !important;
+    border-radius: 10px;
+    border-left: 4px solid #3390ec;
+    color: #e0e0e0 !important;
+}
+
+.movie-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: #e0e0e0 !important;
+}
+
+.movie-title {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 2px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    color: #ffffff !important;
+}
+
+.movie-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #aaa !important;
+}
+
+.movie-quality {
+    display: inline-block;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 700;
+    font-size: 10px;
+    color: #fff;
+    background: #888;
+    line-height: 1.4;
+}
+.movie-quality.\34 K, .movie-quality.\32 160p { background: #e91e63; }
+.movie-quality.\31 080p { background: #2196f3; }
+.movie-quality.\37 20p { background: #ff9800; }
+
+.movie-downloads { display: flex; flex-direction: column; gap: 8px; }
+
+.download-item {
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    background: #2a2a2a !important;
+    border-radius: 10px;
+    color: #e0e0e0 !important;
+}
+
+.download-info { min-width: 0; }
+.download-title {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+    color: #ffffff !important;
+}
+.download-meta {
+    display: flex; flex-wrap: wrap; gap: 6px; font-size: 11px;
+    color: #aaa !important;
+    margin-bottom: 6px;
+}
+
+.download-state {
+    font-size: 11px;
+    color: var(--tg-theme-hint-color, #999);
+    margin-top: 4px;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: #ddd;
+    border-radius: 3px;
+    overflow: hidden;
+}
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    font-size: 0;
+    transition: width 0.5s ease;
+}
+.progress-bar-fill.downloading { background: #2196f3; }
+.progress-bar-fill.completed  { background: #4caf50; }
+.progress-bar-fill.pausedDL    { background: #ff9800; }
+
+.search-area {
+    width: 100%;
+    resize: none;
+    overflow-y: auto;
+    min-height: 56px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
