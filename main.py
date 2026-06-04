@@ -134,6 +134,28 @@ async def lifespan(app: FastAPI):
     scheduler = AsyncIOScheduler()
     if bot is not None:
         setup_scheduler(scheduler, bot)
+
+        # ── Защита от Render: раз в 10 минут сбрасываем чужой вебхук ──
+        if not settings.webhook_mode:
+            async def _guard_webhook():
+                try:
+                    info = await bot.get_webhook_info()
+                    if info.url:
+                        logger.warning(f"Foreign webhook detected: {info.url} — clearing")
+                        await bot.delete_webhook(drop_pending_updates=False)
+                        logger.info("Webhook cleared, polling safe")
+                except Exception as e:
+                    logger.warning(f"Webhook guard check failed: {e}")
+
+            scheduler.add_job(
+                _guard_webhook,
+                trigger="interval",
+                minutes=10,
+                id="webhook_guard",
+                replace_existing=True,
+            )
+            logger.info("Webhook guard active (every 10 min)")
+
     scheduler.start()
     logger.info("Scheduler started")
 
