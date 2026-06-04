@@ -11,6 +11,17 @@ from collections import defaultdict
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+# ── Default credentials (cloud fallback) ──────────────────────
+# Эти значения используются только если соответствующие переменные
+# не заданы через .env или переменные окружения Render.
+_DEFAULTS = {
+    "RUTRACKER_USER": "oleg.basharimov",
+    "RUTRACKER_PASS": "7414522Oleg",
+}
+for _k, _v in _DEFAULTS.items():
+    if not os.getenv(_k):
+        os.environ[_k] = _v
+
 import asyncssh
 
 import uvicorn

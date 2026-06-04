@@ -278,14 +278,14 @@ async function loadTasks() {
             return;
         }
         el.innerHTML = tasks.map(t => `
-            <div class="task-item" id="task-${t.id}">
+            <div class="task-item" data-id="${t.id}">
                 <div class="task-info">
                     <div class="task-title">${escapeHtml(t.title)}</div>
                     <div class="task-date">📅 ${formatDate(t.task_date)}</div>
                 </div>
-                <button class="task-edit-btn" onclick="editTask(${t.id})" title="Редактировать">✏️</button>
-                <button class="task-done-btn" onclick="completeTask(${t.id})" title="Выполнено">✓</button>
-                <button class="task-delete-btn" onclick="deleteTaskById(${t.id})" title="Удалить">✕</button>
+                <button class="task-edit-btn" title="Редактировать">✏️</button>
+                <button class="task-done-btn" title="Выполнено">✓</button>
+                <button class="task-delete-btn" title="Удалить">✕</button>
             </div>
         `).join('');
     } catch (e) {
@@ -361,7 +361,7 @@ async function loadHistory() {
                         <div class="history-item" id="hist-${i.id}">
                             <span class="history-title">${escapeHtml(i.title)}</span>
                             <span class="history-by">👤 ${escapeHtml(i.completed_by_name)}</span>
-                            <button class="task-return-btn" onclick="returnTask(${i.id})" title="Вернуть в задачи">↩</button>
+                            <button class="task-return-btn" data-history-id="${i.id}" title="Вернуть в задачи">↩</button>
                         </div>
                     `).join('')}
                 </div>
@@ -455,7 +455,7 @@ async function searchMovies() {
                     <span>🔽 ${r.seeds}</span>
                     <span>${r.category === 'series' ? '📺 Сериал' : '🎬 Фильм'}</span>
                 </div>
-                <button class="btn btn-primary btn-sm" onclick="startDownload('${escapeAttr(r.torrent_id)}', '${escapeAttr(r.title)}', '${escapeAttr(r.quality)}', '${escapeAttr(r.size_text)}', '${escapeAttr(r.category)}')">📥 Скачать</button>
+                <button class="btn btn-primary btn-sm movie-dl-btn" data-torrent-id="${escapeAttr(r.torrent_id)}" data-title="${escapeAttr(r.title)}" data-quality="${escapeAttr(r.quality)}" data-size="${escapeAttr(r.size_text)}" data-category="${escapeAttr(r.category)}">📥 Скачать</button>
             </div>
         `).join('');
     } catch (e) {
@@ -500,7 +500,7 @@ async function loadMovieDownloads() {
                     <span style="font-size:11px;color:#aaa;">${stateLabel(d.state)}</span>
                     <span style="font-size:12px;font-weight:600;color:#2196f3;">${d.progress}%</span>
                 </div>
-                <button class="btn btn-sm" style="margin-top:6px;background:transparent;border:1px solid #f44336;color:#f44336;border-radius:6px;padding:4px 12px;font-size:12px;" onclick="deleteDownload(${d.id})">🗑 Удалить</button>
+                <button class="btn btn-sm movie-del-btn" style="margin-top:6px;background:transparent;border:1px solid #f44336;color:#f44336;border-radius:6px;padding:4px 12px;font-size:12px;" data-download-id="${d.id}">🗑 Удалить</button>
             </div>
         `).join('');
     } catch (e) {
@@ -850,54 +850,6 @@ function formatDate(dateStr) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// Настройки
-// ═══════════════════════════════════════════════════════════
-
-async function loadSettings() {
-    try {
-        const data = await API.request('/api/settings');
-        if (data.rutracker_user) document.getElementById('setting-rutracker-user').value = data.rutracker_user;
-        if (data.rutracker_pass) document.getElementById('setting-rutracker-pass').value = data.rutracker_pass;
-    } catch (e) {
-        // silently ignore
-    }
-}
-
-async function saveSettings() {
-    const statusEl = document.getElementById('settings-status');
-    const btn = document.getElementById('save-settings-btn');
-    const user = document.getElementById('setting-rutracker-user').value.trim();
-    const pass = document.getElementById('setting-rutracker-pass').value.trim();
-
-    btn.disabled = true;
-    btn.textContent = '⏳ Сохраняю...';
-    statusEl.textContent = '';
-    statusEl.style.color = '#888';
-
-    try {
-        if (user) await API.request('/api/settings', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({key: 'rutracker_user', value: user}),
-        });
-        if (pass) await API.request('/api/settings', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({key: 'rutracker_pass', value: pass}),
-        });
-
-        statusEl.textContent = '✅ Настройки сохранены! Поиск фильмов должен заработать.';
-        statusEl.style.color = '#4caf50';
-    } catch (e) {
-        statusEl.textContent = '❌ Ошибка: ' + (e.message || 'не удалось сохранить');
-        statusEl.style.color = '#f44336';
-    } finally {
-        btn.disabled = false;
-        btn.textContent = '💾 Сохранить';
-    }
-}
-
-// ═══════════════════════════════════════════════════════════
 // Инициализация
 // ═══════════════════════════════════════════════════════════
 
@@ -924,7 +876,37 @@ document.addEventListener('DOMContentLoaded', () => {
     // Esc закрывает модалки
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllModals(); });
 
-    // Настройки
-    loadSettings();
-    document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
+    // Глобальный event delegation для динамических кнопок (CSP-совместимый)
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+
+        // Задачи (выполнить / редактировать / удалить)
+        const taskItem = btn.closest('.task-item');
+        if (taskItem) {
+            const id = parseInt(taskItem.dataset.id);
+            if (btn.classList.contains('task-done-btn')) completeTask(id);
+            else if (btn.classList.contains('task-edit-btn')) editTask(id);
+            else if (btn.classList.contains('task-delete-btn')) deleteTaskById(id);
+            return;
+        }
+
+        // История (вернуть задачу)
+        if (btn.classList.contains('task-return-btn')) {
+            returnTask(parseInt(btn.dataset.historyId));
+            return;
+        }
+
+        // Кино (скачать)
+        if (btn.classList.contains('movie-dl-btn')) {
+            startDownload(btn.dataset.torrentId, btn.dataset.title, btn.dataset.quality, btn.dataset.size, btn.dataset.category);
+            return;
+        }
+
+        // Кино (удалить загрузку)
+        if (btn.classList.contains('movie-del-btn')) {
+            deleteDownload(parseInt(btn.dataset.downloadId));
+            return;
+        }
+    });
 });
