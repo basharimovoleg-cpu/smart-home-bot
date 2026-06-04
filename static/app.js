@@ -215,8 +215,8 @@ async function handlePcSleep() {
 
     try {
         const data = await API.pcSleep();
-        showToast(data.message || 'ПК уходит в гибернацию 💤', 'success', 4000);
-        status.textContent = data.message || 'ПК уходит в гибернацию 💤';
+        showToast(data.message || 'ПК уходит в сон 💤', 'success', 4000);
+        status.textContent = data.message || 'ПК уходит в сон 💤';
         status.style.color = '#2e7d32';
     } catch (e) {
         const msg = (e.message || '').toLowerCase();
@@ -226,8 +226,8 @@ async function handlePcSleep() {
             msg.includes('ошибка 502') ||
             msg.includes('ошибка 504')
         ) {
-            showToast('ПК уходит в гибернацию 💤', 'success', 4000);
-            status.textContent = 'ПК уходит в гибернацию 💤';
+            showToast('ПК успешно уснул 💤', 'success', 4000);
+            status.textContent = 'ПК успешно уснул 💤';
             status.style.color = '#2e7d32';
         } else {
             showToast(e.message || 'Ошибка подключения к ПК');

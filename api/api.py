@@ -315,7 +315,7 @@ async def pc_sleep(
     request: Request,
     auth: dict[str, Any] = Depends(get_current_user),
 ) -> dict[str, Any]:
-    """Отправить Windows-ПК в гибернацию (полное выключение с сохранением сессии)."""
+    """Отправить Windows-ПК в спящий режим."""
     import platform
 
     if platform.system() != "Windows":
@@ -325,24 +325,24 @@ async def pc_sleep(
         )
 
     try:
-        # Hibernate (1) = полное выключение, ForceCritical (1) = немедленно
+        # Sleep (0) = спящий режим, ForceCritical (1) = немедленно
         result = await asyncio.to_thread(
             subprocess.run,
-            ["rundll32.exe", "powrprof.dll,SetSuspendState", "1,1,0"],
+            ["rundll32.exe", "powrprof.dll,SetSuspendState", "0,1,0"],
             capture_output=True, text=True, timeout=10,
         )
         if result.returncode != 0:
             raise HTTPException(
                 status_code=502,
-                detail=f"Команда гибернации вернула код {result.returncode}: {result.stderr}",
+                detail=f"Команда сна вернула код {result.returncode}: {result.stderr}",
             )
     except subprocess.TimeoutExpired:
-        raise HTTPException(status_code=504, detail="Таймаут выполнения команды гибернации")
+        raise HTTPException(status_code=504, detail="Таймаут выполнения команды сна")
     except Exception as e:
-        logger.error(f"Hibernate command failed: {e}")
-        raise HTTPException(status_code=502, detail=f"Не удалось отправить ПК в гибернацию: {e}")
+        logger.error(f"Sleep command failed: {e}")
+        raise HTTPException(status_code=502, detail=f"Не удалось усыпить ПК: {e}")
 
-    return {"success": True, "message": "ПК уходит в гибернацию 💤"}
+    return {"success": True, "message": "ПК уходит в сон 💤"}
 
 
 @router.post("/pc/wake")
